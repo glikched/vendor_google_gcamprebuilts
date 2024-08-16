@@ -36,7 +36,6 @@ jobs:
        git commit -m "Update ${{ matrix.package }} to latest"
 
     - name: Push changes to repo
-      if: steps.check.outputs.need_update == 1
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GH_TOKEN }}
