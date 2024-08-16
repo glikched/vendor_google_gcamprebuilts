@@ -1,0 +1,44 @@
+name: Check for app updates
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  push:
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - package: com.google.andrpid.apps.cameralite
+          - package: com.google.android.GoogleCamera
+      max-parallel: 1
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Fetch APK
+      run: |
+       curl -L --user-agent 'Mozilla/5.0 (X11; Linux x86_64; rv:95.0) Gecko/20100101 Firefox/95.0' --output prebuilts/{{ matrix.package }}/${{ matrix.package }}.apk https://d.apkpure.net/b/APK/${{ matrix.package }}?version=latest
+
+    - name: Update current version
+      if: steps.check.outputs.need_update == 1
+      run: |
+       git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+       git config --local user.name "github-actions[bot]"
+       git pull origin ${{github.ref}} --ff-only
+       git commit -m "Update ${{ matrix.package }} to latest"
+
+    - name: Push changes to repo
+      if: steps.check.outputs.need_update == 1
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GH_TOKEN }}
+
+
