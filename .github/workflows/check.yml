@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - package: com.google.andrpid.apps.cameralite
+          - package: com.google.android.apps.cameralite
           - package: com.google.android.GoogleCamera
       max-parallel: 1
 
@@ -28,7 +28,6 @@ jobs:
        curl -L --user-agent 'Mozilla/5.0 (X11; Linux x86_64; rv:95.0) Gecko/20100101 Firefox/95.0' --output prebuilts/{{ matrix.package }}/${{ matrix.package }}.apk https://d.apkpure.net/b/APK/${{ matrix.package }}?version=latest
 
     - name: Update current version
-      if: steps.check.outputs.need_update == 1
       run: |
        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
        git config --local user.name "github-actions[bot]"
